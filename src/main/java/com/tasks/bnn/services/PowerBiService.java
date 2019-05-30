@@ -18,12 +18,18 @@ public class PowerBiService {
     @Autowired
     private PowerBiConfig config;
 
-    public List<Tile> getTilesInDashboard(JwtToken token) {
+    private JwtToken jwtToken;
+
+    public void setJwtToken(JwtToken jwtToken) {
+        this.jwtToken = jwtToken;
+    }
+
+    public List<Tile> getTilesInDashboard() {
         String url = "https://api.powerbi.com/v1.0/myorg/dashboards/" + config.getDefaultDashboardId() + "/tiles";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBearerAuth(token.getAccessToken());
+        headers.setBearerAuth(jwtToken.getAccessToken());
 
         TilesInDashboard tilesInDashboard = new RestTemplate().exchange(
                 url, HttpMethod.GET, new HttpEntity(headers), TilesInDashboard.class
@@ -32,12 +38,12 @@ public class PowerBiService {
         return Arrays.asList(tilesInDashboard.getTiles());
     }
 
-    public List<Report> getReportsInGroup(JwtToken token) {
+    public List<Report> getReportsInGroup() {
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/reports";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.setBearerAuth(token.getAccessToken());
+        headers.setBearerAuth(jwtToken.getAccessToken());
 
         ReportsInGroup tilesInDashboard = new RestTemplate().exchange(
                 url, HttpMethod.GET, new HttpEntity(headers), ReportsInGroup.class
@@ -46,9 +52,9 @@ public class PowerBiService {
         return Arrays.asList(tilesInDashboard.getReports());
     }
 
-    public EmbedToken getEmbedToken(Tile tile, JwtToken jwtToken, String email) {
-        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"identity\"],\"datasets\":[\"e9c9ce92-1507-468b-a917-c0a2792467d4\"]}]}";
-        String body = String.format(rawBody, email);
+    public EmbedToken getEmbedToken(Tile tile, String email) {
+        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"identity\"],\"datasets\":[\"%s\"]}]}";
+        String body = String.format(rawBody, email, config.getDefaultDatasetId());
 
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/dashboards/" + config.getDefaultDashboardId() + "/tiles/" + tile.getId() + "/GenerateToken";
 
@@ -61,7 +67,7 @@ public class PowerBiService {
         );
     }
 
-    public EmbedToken getEmbedToken(Report report, JwtToken jwtToken, String email) {
+    public EmbedToken getEmbedToken(Report report, String email) {
         String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"identity\"],\"datasets\":[\"%s\"]}]}";
         String body = String.format(rawBody, email, report.getDatasetId());
 

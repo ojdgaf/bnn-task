@@ -20,14 +20,14 @@ public class PowerBiController {
     @Autowired
     private PowerBiService powerBiService;
 
-    @GetMapping("/tiles")
+    @GetMapping("/powerbi/embed/tiles")
     public List<EmbedTile> getEmbedTileTokensForUser(@RequestParam String email) {
         List<EmbedTile> response = new ArrayList<>();
 
-        JwtToken jwtToken = activeDirectoryService.getAccessToken(PowerBiConfig.RESOURCE);
+        powerBiService.setJwtToken(activeDirectoryService.getAccessToken(PowerBiConfig.RESOURCE));
 
-        for (Tile tile : powerBiService.getTilesInDashboard(jwtToken)) {
-            EmbedToken embedToken = powerBiService.getEmbedToken(tile, jwtToken, email);
+        for (Tile tile : powerBiService.getTilesInDashboard()) {
+            EmbedToken embedToken = powerBiService.getEmbedToken(tile, email);
 
             response.add(powerBiService.createEmbedTile(tile, embedToken));
         }
@@ -35,18 +35,18 @@ public class PowerBiController {
         return response;
     }
 
-    @GetMapping("/")
+    @GetMapping("/powerbi/embed/reports")
     public List<EmbedReport> getEmbedReportTokensForUser(@RequestParam String email) {
         List<EmbedReport> response = new ArrayList<>();
 
-        JwtToken jwtToken = activeDirectoryService.getAccessToken(PowerBiConfig.RESOURCE);
+        powerBiService.setJwtToken(activeDirectoryService.getAccessToken(PowerBiConfig.RESOURCE));
 
-        for (Report report : powerBiService.getReportsInGroup(jwtToken)) {
+        for (Report report : powerBiService.getReportsInGroup()) {
             // TODO remove filter
             if (report.getId().equals("d82652f0-0e3d-4625-bc1e-1b8f79b0d463"))
                 continue;
 
-            EmbedToken embedToken = powerBiService.getEmbedToken(report, jwtToken, email);
+            EmbedToken embedToken = powerBiService.getEmbedToken(report, email);
 
             response.add(powerBiService.createEmbedReport(report, embedToken));
         }
