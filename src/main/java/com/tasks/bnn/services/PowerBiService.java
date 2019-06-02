@@ -3,8 +3,8 @@ package com.tasks.bnn.services;
 import java.util.Arrays;
 import java.util.List;
 
-import com.tasks.bnn.config.PowerBiConfig;
 import com.tasks.bnn.dto.*;
+import com.tasks.bnn.config.PowerBiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -53,8 +53,8 @@ public class PowerBiService {
     }
 
     public EmbedToken getEmbedToken(Tile tile, String email) {
-        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"identity\"],\"datasets\":[\"%s\"]}]}";
-        String body = String.format(rawBody, email, config.getDefaultDatasetId());
+        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"%s\"],\"datasets\":[\"%s\"]}]}";
+        String body = String.format(rawBody, email, config.getDefaultRole(), config.getDefaultDatasetId());
 
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/dashboards/" + config.getDefaultDashboardId() + "/tiles/" + tile.getId() + "/GenerateToken";
 
@@ -68,8 +68,8 @@ public class PowerBiService {
     }
 
     public EmbedToken getEmbedToken(Report report, String email) {
-        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"identity\"],\"datasets\":[\"%s\"]}]}";
-        String body = String.format(rawBody, email, report.getDatasetId());
+        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"%s\"],\"datasets\":[\"%s\"]}]}";
+        String body = String.format(rawBody, email, config.getDefaultRole(), report.getDatasetId());
 
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/reports/" + report.getId() + "/GenerateToken";
 

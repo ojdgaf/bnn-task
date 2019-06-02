@@ -5,31 +5,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ActiveDirectoryConfig {
-    @Value("${azure.activedirectory.powerbi.client-id}")
-    private String clientId;
+    @Value("${azure.activedirectory.id}")
+    private String directoryId;
 
-    @Value("${azure.activedirectory.powerbi.client-secret}")
-    private String clientSecret;
+    @Value("${azure.activedirectory.domain}")
+    private String directoryDomain;
 
-    @Value("${azure.activedirectory.powerbi.username}")
-    private String powerBiProAccountUsername;
-
-    @Value("${azure.activedirectory.powerbi.password}")
-    private String powerBiProAccountPassword;
-
-    public String getClientId() {
-        return clientId;
+    public String getDirectoryId() {
+        return directoryId;
     }
 
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public String getPowerBiProAccountUsername() {
-        return powerBiProAccountUsername;
-    }
-
-    public String getPowerBiProAccountPassword() {
-        return powerBiProAccountPassword;
+    public String getDirectoryDomain() {
+        return directoryDomain;
     }
 }

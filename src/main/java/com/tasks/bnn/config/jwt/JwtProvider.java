@@ -19,15 +19,13 @@ public class JwtProvider {
                 header.replace(TOKEN_PREFIX, "") : null;
     }
 
-    String extractUsername(String token) {
-        return extractClaims(token).getSubject();
-    }
-
-    void validateToken(String token) {
-        extractClaims(token);
-    }
-
     public Claims extractClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        int i = token.lastIndexOf('.');
+        String tokenWithoutSignature = token.substring(0, i + 1);
+        return Jwts.parser().parseClaimsJwt(tokenWithoutSignature).getBody();
+    }
+
+    public Claims extractClaims(String token, String key) {
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
 }

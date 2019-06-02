@@ -1,6 +1,6 @@
 package com.tasks.bnn.services;
 
-import com.tasks.bnn.config.ActiveDirectoryConfig;
+import com.tasks.bnn.config.PowerBiConfig;
 import com.tasks.bnn.dto.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -14,11 +14,11 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ActiveDirectoryService {
     @Autowired
-    private ActiveDirectoryConfig config;
+    private PowerBiConfig config;
 
-    private String authorizationURL = "https://login.microsoftonline.com/common/oauth2/token";
+    private static final String AUTHORIZATION_URL = "https://login.microsoftonline.com/common/oauth2/token";
 
-    public JwtToken getAccessToken(String resource) {
+    public JwtToken getPowerBiAdminAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -26,14 +26,14 @@ public class ActiveDirectoryService {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "password");
-        body.add("resource", resource);
+        body.add("resource", PowerBiConfig.RESOURCE);
         body.add("client_id", config.getClientId());
         body.add("client_secret", config.getClientSecret());
-        body.add("username", config.getPowerBiProAccountUsername());
-        body.add("password", config.getPowerBiProAccountPassword());
+        body.add("username", config.getAdminUsername());
+        body.add("password", config.getAdminPassword());
 
         return restTemplate.postForObject(
-                authorizationURL,
+                AUTHORIZATION_URL,
                 new HttpEntity<>(body, headers),
                 JwtToken.class
         );
