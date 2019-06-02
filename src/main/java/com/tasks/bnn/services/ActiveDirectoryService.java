@@ -19,12 +19,21 @@ public class ActiveDirectoryService {
     private static final String AUTHORIZATION_URL = "https://login.microsoftonline.com/common/oauth2/token";
 
     public JwtToken getPowerBiUserAccessToken(String authorizationCode) {
-        return new JwtToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "authorization_code");
+        body.add("resource", PowerBiConfig.RESOURCE);
+        body.add("client_id", config.getClientId());
+        body.add("client_secret", config.getClientSecret());
+        body.add("code", authorizationCode);
+        body.add("redirect_uri", "http://localhost:8080/login/oauth2/code/azure");
+
+        return getAccessToken(headers, body);
     }
 
     public JwtToken getPowerBiAdminAccessToken() {
-        RestTemplate restTemplate = new RestTemplate();
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -36,7 +45,11 @@ public class ActiveDirectoryService {
         body.add("username", config.getAdminUsername());
         body.add("password", config.getAdminPassword());
 
-        return restTemplate.postForObject(
+        return getAccessToken(headers, body);
+    }
+
+    private JwtToken getAccessToken(HttpHeaders headers, MultiValueMap<String, String> body) {
+        return new RestTemplate().postForObject(
                 AUTHORIZATION_URL,
                 new HttpEntity<>(body, headers),
                 JwtToken.class
