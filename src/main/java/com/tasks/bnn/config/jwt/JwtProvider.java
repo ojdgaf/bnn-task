@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtProvider {
-    private final static String AUTHORIZATION_HEADER_NAME = "Authorization";
+    private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
-    private final static String TOKEN_PREFIX = "Bearer ";
+    private static final String TOKEN_PREFIX = "Bearer ";
+
+    private static final String USERNAME_KEY = "unique_name";
 
     String extractToken(HttpServletRequest req) {
         String header = req.getHeader(AUTHORIZATION_HEADER_NAME);
@@ -27,5 +29,9 @@ public class JwtProvider {
 
     public Claims extractClaims(String token, String key) {
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+    }
+
+    public String extractActiveDirectoryUsername(String token) {
+        return (String) extractClaims(token).get(USERNAME_KEY);
     }
 }

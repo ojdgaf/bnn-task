@@ -37,13 +37,13 @@ public class ActiveDirectoryJwtValidator {
         if (!validateSignature())
             throw new SignatureException("Invalid JWT signature");
 
-        // it also validates "exp" claim
+        // also validate "exp" claim
         Claims claims = provider.extractClaims(token);
 
         if (!validateAudience(claims.getAudience()))
             throw new JwtException("Invalid JWT audience");
 
-        if (!validateUsername((String) claims.get("unique_name")))
+        if (!validateUsername(provider.extractActiveDirectoryUsername(token)))
             throw new UnsupportedJwtException("Unsupported user's domain");
     }
 
