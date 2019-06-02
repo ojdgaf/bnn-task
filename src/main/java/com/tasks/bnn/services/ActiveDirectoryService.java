@@ -18,6 +18,10 @@ public class ActiveDirectoryService {
 
     private static final String AUTHORIZATION_URL = "https://login.microsoftonline.com/common/oauth2/token";
 
+    public JwtToken getPowerBiUserAccessToken(String authorizationCode) {
+        return new JwtToken();
+    }
+
     public JwtToken getPowerBiAdminAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
 

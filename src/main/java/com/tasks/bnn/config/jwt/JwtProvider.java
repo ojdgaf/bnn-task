@@ -1,18 +1,49 @@
 package com.tasks.bnn.config.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.Date;
+import java.util.Base64;
 
 @Component
 public class JwtProvider {
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
-
     private static final String TOKEN_PREFIX = "Bearer ";
+    private static final String AUTHORITIES_KEY = "authorities";
 
-    private static final String USERNAME_KEY = "unique_name";
+    @Value("${app.jwt.secret}")
+    private String secret;
+
+    @Value("${app.jwt.expirationInMs}")
+    private long expirationInMs;
+
+    @PostConstruct
+    protected void init() {
+        secret = Base64.getEncoder().encodeToString(secret.getBytes());
+    }
+
+    public String createToken(Map<String, Object> claims) {
+        if (!checkClaims(claims))
+            throw new JwtException("Could not create JWT token: invalid claims");
+
+        Date issuedAt = new Date();
+        Date expiresAt = new Date(issuedAt.getTime() + expirationInMs);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiresAt)
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
+    }
 
     String extractToken(HttpServletRequest req) {
         String header = req.getHeader(AUTHORIZATION_HEADER_NAME);
@@ -21,17 +52,40 @@ public class JwtProvider {
                 header.replace(TOKEN_PREFIX, "") : null;
     }
 
-    public Claims extractClaims(String token) {
-        int i = token.lastIndexOf('.');
-        String tokenWithoutSignature = token.substring(0, i + 1);
-        return Jwts.parser().parseClaimsJwt(tokenWithoutSignature).getBody();
+    String extractUsername(String token) {
+        return extractClaims(token).getSubject();
     }
 
-    public Claims extractClaims(String token, String key) {
-        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+    String[] extractAuthorityNames(String token) {
+        String[] authorityNames = new String[0];
+
+        try {
+            Object element = extractClaims(token).get(AUTHORITIES_KEY);
+            return (String[]) element;
+        } catch (Exception e) {
+            return authorityNames;
+        }
     }
 
-    public String extractActiveDirectoryUsername(String token) {
-        return (String) extractClaims(token).get(USERNAME_KEY);
+    void validateToken(String token) {
+        extractClaims(token);
+    }
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    private boolean checkClaims(Map<String, Object> claims) {
+        // claims must provide subject (username)
+        if (!claims.containsKey("sub"))
+            return false;
+
+        // create empty array of authorities
+        if (!claims.containsKey(AUTHORITIES_KEY))
+            claims.put("authorities", new String[0]);
+
+        Object subject = claims.get("sub");
+
+        return subject instanceof String && !((String) subject).isEmpty();
     }
 }
