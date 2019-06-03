@@ -19,7 +19,6 @@ public class PowerBiController {
     private final PowerBiService powerBiService;
 
     @GetMapping("embed/tiles")
-    @CrossOrigin(origins = "http://localhost:4200")
     public List<EmbedTileDTO> getEmbedTileTokensForUser(Authentication auth) {
         JwtTokenDTO token = activeDirectoryService.getPowerBiAdminAccessToken();
 
@@ -27,7 +26,6 @@ public class PowerBiController {
     }
 
     @GetMapping("embed/reports")
-    @CrossOrigin(origins = "http://localhost:4200")
     public List<EmbedReportDTO> getEmbedReportTokensForUser(Authentication auth) {
         JwtTokenDTO token = activeDirectoryService.getPowerBiAdminAccessToken();
 
