@@ -5,15 +5,13 @@ import com.tasks.bnn.dto.*;
 import com.tasks.bnn.services.ActiveDirectoryService;
 import com.tasks.bnn.services.PowerBiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("powerbi")
 public class PowerBiController {
     @Autowired
     private ActiveDirectoryService activeDirectoryService;
@@ -21,7 +19,7 @@ public class PowerBiController {
     @Autowired
     private PowerBiService powerBiService;
 
-    @GetMapping("/powerbi/embed/tiles")
+    @GetMapping("embed/tiles")
     @CrossOrigin(origins = "http://localhost:4200")
     public List<EmbedTile> getEmbedTileTokensForUser(@RequestParam String email) {
         List<EmbedTile> response = new ArrayList<>();
@@ -37,7 +35,7 @@ public class PowerBiController {
         return response;
     }
 
-    @GetMapping("/powerbi/embed/reports")
+    @GetMapping("embed/reports")
     @CrossOrigin(origins = "http://localhost:4200")
     public List<EmbedReport> getEmbedReportTokensForUser(@RequestParam String email) {
         List<EmbedReport> response = new ArrayList<>();
