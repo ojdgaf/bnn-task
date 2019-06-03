@@ -1,14 +1,14 @@
 package com.tasks.bnn.controllers;
 
-import com.tasks.bnn.config.PowerBiConfig;
+import java.util.List;
+import java.util.ArrayList;
+
 import com.tasks.bnn.dto.*;
 import com.tasks.bnn.services.ActiveDirectoryService;
 import com.tasks.bnn.services.PowerBiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("powerbi")
@@ -21,13 +21,13 @@ public class PowerBiController {
 
     @GetMapping("embed/tiles")
     @CrossOrigin(origins = "http://localhost:4200")
-    public List<EmbedTile> getEmbedTileTokensForUser(@RequestParam String email) {
+    public List<EmbedTile> getEmbedTileTokensForUser(Authentication auth) {
         List<EmbedTile> response = new ArrayList<>();
 
         powerBiService.setJwtToken(activeDirectoryService.getPowerBiAdminAccessToken());
 
         for (Tile tile : powerBiService.getTilesInDashboard()) {
-            EmbedToken embedToken = powerBiService.getEmbedToken(tile, email);
+            EmbedToken embedToken = powerBiService.getEmbedToken(tile, auth.getPrincipal().toString());
 
             response.add(powerBiService.createEmbedTile(tile, embedToken));
         }
@@ -37,13 +37,13 @@ public class PowerBiController {
 
     @GetMapping("embed/reports")
     @CrossOrigin(origins = "http://localhost:4200")
-    public List<EmbedReport> getEmbedReportTokensForUser(@RequestParam String email) {
+    public List<EmbedReport> getEmbedReportTokensForUser(Authentication auth) {
         List<EmbedReport> response = new ArrayList<>();
 
         powerBiService.setJwtToken(activeDirectoryService.getPowerBiAdminAccessToken());
 
         for (Report report : powerBiService.getReportsInGroup()) {
-            EmbedToken embedToken = powerBiService.getEmbedToken(report, email);
+            EmbedToken embedToken = powerBiService.getEmbedToken(report, auth.getPrincipal().toString());
 
             response.add(powerBiService.createEmbedReport(report, embedToken));
         }
