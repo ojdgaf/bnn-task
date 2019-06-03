@@ -13,10 +13,10 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class ActiveDirectoryService {
+    private static final String AUTHORIZATION_URL = "https://login.microsoftonline.com/common/oauth2/token";
+
     @Autowired
     private PowerBiConfig config;
-
-    private static final String AUTHORIZATION_URL = "https://login.microsoftonline.com/common/oauth2/token";
 
     public JwtToken getPowerBiAdminAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
