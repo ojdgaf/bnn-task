@@ -15,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PowerBiService {
+    private static final String EMBED_REQUEST_BODY_JSON = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"%s\"],\"datasets\":[\"%s\"]}]}";
+
     @Autowired
     private PowerBiConfig config;
 
@@ -53,33 +55,29 @@ public class PowerBiService {
     }
 
     public EmbedToken getEmbedToken(Tile tile, String email) {
-        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"%s\"],\"datasets\":[\"%s\"]}]}";
-        String body = String.format(rawBody, email, config.getDefaultRole(), config.getDefaultDatasetId());
+        String body = String.format(
+                EMBED_REQUEST_BODY_JSON,
+                email,
+                config.getDefaultRole(),
+                config.getDefaultDatasetId()
+        );
 
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/dashboards/" + config.getDefaultDashboardId() + "/tiles/" + tile.getId() + "/GenerateToken";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(jwtToken.getAccessToken());
-
-        return new RestTemplate().postForObject(
-                url, new HttpEntity<>(body, headers), EmbedToken.class
-        );
+        return requestEmbedToken(url, body);
     }
 
     public EmbedToken getEmbedToken(Report report, String email) {
-        String rawBody = "{\"accessLevel\":\"View\",\"identities\":[{\"username\":\"%s\",\"roles\":[\"%s\"],\"datasets\":[\"%s\"]}]}";
-        String body = String.format(rawBody, email, config.getDefaultRole(), report.getDatasetId());
+        String body = String.format(
+                EMBED_REQUEST_BODY_JSON,
+                email,
+                config.getDefaultRole(),
+                report.getDatasetId()
+        );
 
         String url = "https://api.powerbi.com/v1.0/myorg/groups/" + config.getDefaultGroupId() + "/reports/" + report.getId() + "/GenerateToken";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(jwtToken.getAccessToken());
-
-        return new RestTemplate().postForObject(
-                url, new HttpEntity<>(body, headers), EmbedToken.class
-        );
+        return requestEmbedToken(url, body);
     }
 
     public EmbedTile createEmbedTile(Tile tile, EmbedToken embedToken) {
@@ -102,6 +100,16 @@ public class PowerBiService {
                 embedToken.getValue(),
                 report.getEmbedUrl(),
                 report.getWebUrl()
+        );
+    }
+
+    private EmbedToken requestEmbedToken(String url, Object body) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(jwtToken.getAccessToken());
+
+        return new RestTemplate().postForObject(
+                url, new HttpEntity<>(body, headers), EmbedToken.class
         );
     }
 }
