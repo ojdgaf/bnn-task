@@ -21,17 +21,13 @@ public class JwtProvider {
                 header.replace(TOKEN_PREFIX, "") : null;
     }
 
-    public Claims extractClaims(String token) {
+    Claims extractClaims(String token) {
         int i = token.lastIndexOf('.');
         String tokenWithoutSignature = token.substring(0, i + 1);
         return Jwts.parser().parseClaimsJwt(tokenWithoutSignature).getBody();
     }
 
-    public Claims extractClaims(String token, String key) {
-        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
-    }
-
-    public String extractActiveDirectoryUsername(String token) {
+    String extractActiveDirectoryUsername(String token) {
         return (String) extractClaims(token).get(USERNAME_KEY);
     }
 }

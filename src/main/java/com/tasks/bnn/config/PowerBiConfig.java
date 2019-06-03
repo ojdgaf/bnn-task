@@ -1,9 +1,11 @@
 package com.tasks.bnn.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
 public class PowerBiConfig {
     public static final String RESOURCE = "https://analysis.windows.net/powerbi/api";
 
@@ -30,36 +32,4 @@ public class PowerBiConfig {
 
     @Value("${api.powerbi.default-role}")
     private String defaultRole;
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public String getAdminUsername() {
-        return adminUsername;
-    }
-
-    public String getAdminPassword() {
-        return adminPassword;
-    }
-
-    public String getDefaultGroupId() {
-        return defaultGroupId;
-    }
-
-    public String getDefaultDashboardId() {
-        return defaultDashboardId;
-    }
-
-    public String getDefaultDatasetId() {
-        return defaultDatasetId;
-    }
-
-    public String getDefaultRole() {
-        return defaultRole;
-    }
 }

@@ -1,7 +1,7 @@
 package com.tasks.bnn.config;
 
 import com.tasks.bnn.config.jwt.ActiveDirectoryJwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,9 +11,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private ActiveDirectoryJwtFilter activeDirectoryJwtFilter;
+    private final ActiveDirectoryJwtFilter activeDirectoryJwtFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

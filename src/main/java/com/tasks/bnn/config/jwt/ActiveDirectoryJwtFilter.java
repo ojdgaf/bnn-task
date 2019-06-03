@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.jsonwebtoken.JwtException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,12 +21,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
+@RequiredArgsConstructor
 public class ActiveDirectoryJwtFilter extends OncePerRequestFilter {
-    @Autowired
-    private ActiveDirectoryJwtValidator validator;
+    private final ActiveDirectoryJwtValidator validator;
 
-    @Autowired
-    private JwtProvider provider;
+    private final JwtProvider provider;
 
     @Override
     protected void doFilterInternal(

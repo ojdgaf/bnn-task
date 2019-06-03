@@ -5,6 +5,7 @@ import java.net.URI;
 import com.tasks.bnn.config.ActiveDirectoryConfig;
 import com.tasks.bnn.config.PowerBiConfig;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.jose4j.jwa.AlgorithmConstraints;
 import org.jose4j.jwk.JsonWebKey;
 import org.jose4j.jwk.JsonWebKeySet;
@@ -16,15 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@RequiredArgsConstructor
 public class ActiveDirectoryJwtValidator {
-    @Autowired
-    private ActiveDirectoryConfig activeDirectoryConfig;
+    private final ActiveDirectoryConfig activeDirectoryConfig;
 
-    @Autowired
-    private PowerBiConfig powerBiConfig;
+    private final PowerBiConfig powerBiConfig;
 
-    @Autowired
-    private JwtProvider provider;
+    private final JwtProvider provider;
 
     private String token;
 
