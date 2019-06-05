@@ -1,6 +1,6 @@
 package com.tasks.bnn.config;
 
-import com.tasks.bnn.config.jwt.ActiveDirectoryJwtFilter;
+import com.microsoft.azure.spring.autoconfigure.aad.AADAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,19 +14,19 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final ActiveDirectoryJwtFilter activeDirectoryJwtFilter;
+    private final AADAuthenticationFilter aadAuthFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
-                .anyRequest()
-                .authenticated()
-                .antMatchers(HttpMethod.OPTIONS)
-                .permitAll()
+                .authorizeRequests().anyRequest().authenticated()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .and()
-                .addFilterAfter(activeDirectoryJwtFilter, CorsFilter.class)
-                .cors().and().csrf().disable();
+                .addFilterAfter(aadAuthFilter, CorsFilter.class)
+                .cors()
+                .and().
+                csrf().disable();
     }
 }

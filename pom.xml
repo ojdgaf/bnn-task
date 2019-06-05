@@ -17,6 +17,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <azure.version>2.1.6</azure.version>
     </properties>
 
     <dependencies>
@@ -30,8 +31,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,14 +39,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-active-directory-spring-boot-starter</artifactId>
+            <version>${azure.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bitbucket.b_c</groupId>
-            <artifactId>jose4j</artifactId>
-            <version>0.6.5</version>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -55,6 +54,18 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-spring-boot-bom</artifactId>
+                <version>${azure.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
